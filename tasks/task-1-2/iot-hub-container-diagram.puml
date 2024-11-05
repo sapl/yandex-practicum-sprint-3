@@ -4,7 +4,7 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
 AddRelTag("dashed", $lineStyle = DashedLine())
-AddElementTag("db", $bgColor="#837ede", $borderColor="#4c46b0")
+AddElementTag("db", $bgColor="#999bd1", $borderColor="#4c46b0")
 
 
 LAYOUT_TOP_DOWN()
@@ -13,7 +13,7 @@ title Модуль IoT Hub и взаимодействие с устройств
 
 Person(user, "Пользователь\n Mobile app")
 
-Boundary(home, "Домашняя сеть", "Zigbee, Wi-Fi") {
+Boundary(home, "Домашняя сеть", "Wi-Fi, Zigbee, Bluetooth") {
         Component_Ext(sensor1, "Sensor 1", "Zigbee")
 
     Container_Ext(gateway, "Device Gateway", "Wi-Fi, Zigbee")
@@ -33,17 +33,17 @@ Rel(user, home, "Настройка устройства через Bluetooth")
     Boundary(iotHub, "IoT Hub", "IoT Core функции") {
 
   Deployment_Node(kafka, "Шина данных", "Apache Kafka", "MQTT топики")
-        Container(dps, "Device Provisioning", "Java", "Первичная регистрация устройвста")
-        Container(deviceManagementService, "Device Management", "Java", "Информация об устройствах")
-        Container(communicationService, "Communication Service", "Java", "Обеспечивает канал связи c устройствами через MQTT/HTTPS")
+        Container(dps, "Device Provisioning", "Java", "Первичная регистрация устройства")
+        Container(deviceManagementService, "Device Core Management", "Java", "Базовые общие интерфейсы работы с абстрактным устройством.")
+       Container(communicationService, "Communication Service", "Java", "Обеспечивает канал связи c устройствами через MQTT/HTTPS")
 
         ContainerDb(devicesDb, "Device State DB", "MongoDB", "Мета информация, состояние, конфигурация", $tags=db)
     }
 
     Boundary(portal, "«Тёплый дом» Portal") {
          Container(dataService, "Device Data Processing", "Java", "Прием и обработка телеметрии")
-         Container(configurationService, "Device Configuration", "Java", "Сервис управления пользователями, связкой c его устройствами")
-          Container(dataService, "Device Data Processing", "Java", "Прием и обработка телеметрии")
+         Container(configurationService, "Device Custom Configuration", "Java", "Реализует логику в зависимости от типа.")
+         Container(dataService, "Device Data Processing", "Java", "Прием и обработка телеметрии")
     }
 
 

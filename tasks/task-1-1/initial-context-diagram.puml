@@ -2,25 +2,32 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
+Boundary(users,"" ){
 Person(user, "Пользователи")
 Person(admin, "Техники")
+}
 
-System(platform, "«Тёплый дом» ", "Центральный портал умного дома") {
+
+Boundary(platform, "«Тёплый дом» ", "Корпоративная сеть, 1-2 сервера") {
+    Container(web, "Web UI", "HTML")
     Container(backend, "Бэкенд", "Java", "Монолитный бакенд. Собирает телеметрию, управляет пользователями и системой целиком")
     ContainerDb(database, "Database", "Postgres", "Хранит и телеметрию и данные бизнес логики")
+    web -> backend: HTTP API
+    backend -> database
 }
 
-Boundary(home, "Домашняя сеть", "Какой-то радио / ethernet протокол"){
-    System_Ext(gateway, "Main module /\nGateway")
+Boundary(home, "Домашняя сеть", "WiFi/GCM"){
     Container_Ext(heatingSystem, "Heating\n system")
+    System_Ext(gateway, "Gateway")
     Container_Ext(sensor, "Temperature\n sensor 1")
+    heatingSystem->gateway
 }
 
 
-Rel(user, platform, "Проверить состояние, вкл/выкл отопление")
-Rel(admin, platform, "Настройка системы")
-Rel(admin, gateway, "Подключение датчиков на месте")
-Rel(gateway, backend, "Передача телеметрии", "Какой-то протокол")
+Rel(user, web, "Проверить состояние, вкл/выкл отопление")
+Rel(admin, web, " ")
+admin .> home: Подключение и настройка на месте
+Rel(gateway, backend, "Передача телеметрии, ожидание команд", "Какой-то протокол")
 
 
 @enduml
