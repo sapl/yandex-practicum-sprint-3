@@ -1,0 +1,39 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+
+Boundary(actors, "") {
+    Person(user, "Пользователь")
+    Person(support, "Поддержка")
+    Person(tech, "Техник")
+    Container(apps, "Web / Mobile \n Applications", "iOS/Android/Web", "")
+}
+
+System_Ext(externalServices, "External Services", "Вспомогательные сервисы (Google/Apple, SMS, Email)")
+System_Ext(partnerSystems, "Partner Services", "B2B интеграции")
+
+Boundary(platform, "«Тёплый дом» (IoT Платформа)", "Enterprise Network, K8s, HTTP API, Kafka Topics") {
+    System(iotHub, "IoT Hub Services", "- Device Provisioning \n - Device Management \n - Communication")
+    System(portal, "Portal Services", "- Device Data Processing \n - Device Configuration \n - User Management \n - Auth Service \n - Support Service")
+    Deployment_Node(infra, "Infrastructure Services", "Kubernetes Network", "- Apache Kafka\n -Redis Cache \n - Prometheus, Grafana \n - Zipkin, Loki")
+}
+
+Boundary(home, "Домашняя сеть", "Zigbee, Wi-Fi") {
+    System_Ext(gateway, "Device Gateway", "Устройства умного дома, работающие через шлюз(ы) или отдельно.")
+}
+
+Rel(user, apps, " ")
+Rel(support, apps, " ")
+Rel(tech, apps, " ")
+Rel(apps, portal, "REST API", "HTTP")
+Rel(apps, gateway, "Настройка устройства через Bluetooth")
+Rel(portal, externalServices, "API/SDK")
+Rel(partnerSystems, portal, "Запрос данных через API/Webhook", "HTTP")
+Rel(gateway, iotHub, "Отправка телеметрии, приём команд, DP", "MQTT/SDK")
+
+@enduml
+
+

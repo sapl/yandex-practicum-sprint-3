@@ -191,4 +191,5 @@ build/
 
 
 tmp/
-task-*
+
+**/.env
