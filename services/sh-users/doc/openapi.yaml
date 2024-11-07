@@ -1,0 +1,182 @@
+openapi: 3.0.1
+info:
+  title: SH-USERS
+  version: 0.0.1-SNAPSHOT
+servers:
+  - url: http://localhost:8081
+    description: Generated server url
+paths:
+  /api/v1/homes/{homeId}/devices/{deviceId}:
+    put:
+      tags:
+        - Home Devices
+      summary: Assign device to the home
+      operationId: assignDevice
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: homeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+        - Home Devices
+      summary: Unassign device
+      operationId: unAssignDevice
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: homeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/users:
+    post:
+      tags:
+        - Users
+      summary: Create User
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/users/{userId}/homes:
+    get:
+      tags:
+        - User Homes
+      summary: Get User Homes
+      operationId: getUserHomes
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserHomeDto"
+    post:
+      tags:
+        - User Homes
+      summary: Create User Home
+      operationId: createHome
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserHomeCreateDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    UserCreateDto:
+      required:
+        - email
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: User display name.
+          example: Boris Britva
+        email:
+          type: string
+          description: User email address.
+          example: boris@gmail.com
+    UserDto:
+      required:
+        - createdAt
+        - email
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: User ID.
+          example: xxxx
+        name:
+          type: string
+          description: User display name.
+          example: Boris Britva
+        email:
+          type: string
+          description: User email address.
+          example: boris@gmail.com
+        createdAt:
+          type: string
+          description: User registration time.
+          format: date-time
+    UserHomeCreateDto:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: User home display name.
+          example: My home.
+    UserHomeDto:
+      required:
+        - deviceIds
+        - id
+        - isOwner
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Home ID.
+          example: xxxx
+        name:
+          type: string
+          description: User home display name.
+          example: My home.
+        isOwner:
+          type: boolean
+          description: The users is owner of the home.
+          example: true
+        deviceIds:
+          type: array
+          description: Assigned device list to the home.
+          items:
+            type: string
+            description: Assigned device list to the home.
