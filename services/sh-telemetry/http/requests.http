@@ -1,0 +1,12 @@
+
+### Get Sensor Telemetry
+GET {{baseUrl}}/api/v1/devices/{{deviceId_1}}/telemetry?sensorName=temperature&timeFrom=2024-11-08T13:14:13Z
+
+### Send Sensor Telemetry
+POST {{baseUrl}}/api/v1/devices/{{deviceId_1}}/telemetry
+Content-Type: application/json
+
+{
+  "temperature": 18.213,
+  "humidity": 88.1
+}

@@ -99,8 +99,7 @@ package "Portal / ClickHouse DB" {
     entity device_telemetry {
         * device_id : UUID
         --
-        device_type : ENUM
-        sensor_type: STRING
+        sensor_name: STRING
         datetime: DATETIME
         value: FLOAT
     }
