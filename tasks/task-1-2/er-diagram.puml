@@ -18,11 +18,11 @@ package "IoT Hub / Device Core DB" {
     entity device_state {
         * device_id : UUID
         --
-        is_online: BOOLEAN
+        last_online_at: DATETIME
         firmware_version: STRING
         desire_state : JSON
-        last_state : JSON
-        updated_at: DATETIME
+        reported_state : JSON,
+        telemetry: JSON
     }
 
     device_state::device_id ||-|| devices::id : 1 к 1
@@ -99,8 +99,7 @@ package "Portal / ClickHouse DB" {
     entity device_telemetry {
         * device_id : UUID
         --
-        device_type : ENUM
-        sensor_type: STRING
+        sensor_name: STRING
         datetime: DATETIME
         value: FLOAT
     }
