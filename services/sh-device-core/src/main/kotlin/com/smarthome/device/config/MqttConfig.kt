@@ -1,6 +1,7 @@
 package com.smarthome.device.config
 
 
+import org.apache.commons.logging.LogFactory
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -15,8 +16,11 @@ import org.springframework.messaging.MessageChannel
 @Configuration
 class MqttInboundConfig(@Value("\${mqtt.url}") val url: String,
                         @Value("\${mqtt.topic}") val topic: String) {
+    private val logger = LogFactory.getLog(javaClass)
+
     @Bean
     fun mqttClientFactory(): MqttPahoClientFactory {
+        logger.info("Initialising mqttClientFactory, mqtt url: ${url}")
         val factory = DefaultMqttPahoClientFactory()
         val options = MqttConnectOptions()
         options.serverURIs = arrayOf(url)
@@ -29,6 +33,7 @@ class MqttInboundConfig(@Value("\${mqtt.url}") val url: String,
 
     @Bean
     fun mqttInbound(): MqttPahoMessageDrivenChannelAdapter {
+        logger.info("Initialising mqttInbound, mqtt url: ${url}")
         return MqttPahoMessageDrivenChannelAdapter(
             "clientId", mqttClientFactory(), topic
         ).apply {

@@ -1,0 +1,88 @@
+version: '3.8'
+
+name: smart-home
+
+services:
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27018:27017"
+    networks:
+      - sh_network
+    volumes:
+      - mongo_data:/data/db
+
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    networks:
+      - sh_network
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_DB=default
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1884:1883"
+    networks:
+      - sh_network
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  sh-users:
+    build:
+      context: ./services/sh-users
+    container_name: sh-users
+    image: sh-users
+    ports:
+      - "8090:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_CONNECTION_URL=mongodb://mongo:27017/sh_users
+      - MQTT_CONNECTION_URL=tcp://mosquitto:1883
+
+  sh-device-core:
+    build:
+      context: ./services/sh-device-core
+    container_name: sh-device-core
+    image: sh-device-core
+    ports:
+      - "8092:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_CONNECTION_URL=mongodb://mongo:27017/sh_telemetry
+      - MQTT_CONNECTION_URL=tcp://mosquitto:1883
+
+  sh-telemetry:
+    build:
+      context: ./services/sh-telemetry
+    container_name: sh-telemetry
+    image: sh-telemetry
+    ports:
+      - "8091:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_CONNECTION_URL=jdbc:clickhouse://clickhouse:8123/default
+      - MQTT_CONNECTION_URL=tcp://mosquitto:1883
+
+networks:
+  sh_network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  mosquitto_data:
+  clickhouse_data:

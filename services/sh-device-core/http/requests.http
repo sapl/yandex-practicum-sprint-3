@@ -1,9 +1,5 @@
 
 
-
-### Get Device Info
-GET {{baseUrl}}/api/v1/devices/{{deviceId_1}}
-
 ### Register device
 POST {{baseUrl}}/api/v1/devices
 Content-Type: application/json
@@ -15,6 +11,9 @@ Content-Type: application/json
   "hardwareVersion": "BHR4037GL"
 }
 
+
+### Get Device Info
+GET {{baseUrl}}/api/v1/devices/672f9df5c9113b6962de7a0b
 
 
 ### Get Sensor Telemetry
