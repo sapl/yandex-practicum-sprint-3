@@ -13,18 +13,18 @@ Content-Type: application/json
 
 
 ### Get Device Info
-GET {{baseUrl}}/api/v1/devices/672f9df5c9113b6962de7a0b
+GET {{baseUrl}}/api/v1/devices/672fabf8efbaf148fc572b0d
 
 
 ### Get Sensor Telemetry
-GET {{baseUrl}}/api/v1/devices/{{deviceId_1}}/state
+GET {{baseUrl}}/api/v1/devices/672fabf8efbaf148fc572b0d/state
 
 ### Send Sensor Telemetry
-PATCH {{baseUrl}}/api/v1/devices/{{deviceId_1}}/state
+PATCH {{baseUrl}}/api/v1/devices/672fabf8efbaf148fc572b0d/state
 Content-Type: application/json
 
 {
   "isOn": false,
-  "wdw": "red",
+  "wdw": null,
   "targetTemperature": 222
 }

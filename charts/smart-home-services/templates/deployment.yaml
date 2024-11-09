@@ -1,0 +1,38 @@
+{{- range $name, $service := .Values.services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    app: {{ $name }}
+spec:
+  replicas: {{ $.Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      containers:
+        - name: {{ $name }}
+          image: {{ $service.image }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ $service.containerPort }}
+          {{- if $service.command }}
+          command: {{ toJson $service.command }}
+          {{- end }}
+          {{- if $service.args }}
+          args: {{ toJson $service.args }}
+          {{- end }}
+          {{- if $service.env }}
+          env:
+            {{- range $service.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- end }}
+  {{- end }}

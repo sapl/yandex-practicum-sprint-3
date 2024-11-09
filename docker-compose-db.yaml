@@ -1,0 +1,37 @@
+version: '3.8'
+
+name: smart-home-databases
+
+services:
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27018:27017"
+    networks:
+      - sh_network
+    volumes:
+      - mongo_data:/data/db
+
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    networks:
+      - sh_network
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_DB=default
+
+networks:
+  sh_network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  clickhouse_data:

@@ -35,10 +35,11 @@ services:
       - "1884:1883"
     networks:
       - sh_network
-    volumes:
-      - mosquitto_data:/mosquitto/data
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
-
+    command: >
+      /bin/sh -c "echo 'allow_anonymous true' > /mosquitto/config/mosquitto.conf &&
+                  echo 'bind_address 0.0.0.0' >> /mosquitto/config/mosquitto.conf &&
+                  echo 'log_type all' >> /mosquitto/config/mosquitto.conf &&
+                  mosquitto -c /mosquitto/config/mosquitto.conf"
   sh-users:
     build:
       context: ./services/sh-users
@@ -50,7 +51,6 @@ services:
       - sh_network
     environment:
       - DB_CONNECTION_URL=mongodb://mongo:27017/sh_users
-      - MQTT_CONNECTION_URL=tcp://mosquitto:1883
 
   sh-device-core:
     build:
@@ -84,5 +84,4 @@ networks:
 
 volumes:
   mongo_data:
-  mosquitto_data:
   clickhouse_data:
