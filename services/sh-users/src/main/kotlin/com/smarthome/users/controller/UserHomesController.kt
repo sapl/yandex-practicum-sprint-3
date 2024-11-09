@@ -5,6 +5,7 @@ import com.smarthome.users.dto.UserHomeCreateDto
 import com.smarthome.users.dto.UserHomeDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("api/v1/users", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "User Homes")
 class UserHomesController(private val userService: UserService) {
 
