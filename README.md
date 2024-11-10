@@ -13,7 +13,17 @@
 [Инструкция по установке](https://minikube.sigs.k8s.io/docs/start/)
 
 ```bash
-minikube start
+minikube start --memory=5120 --cpus=6
+```
+
+Загрузить образы в minikube:
+```shell
+./cp-images-to-minikube.sh
+```
+
+```shell
+minikube addons enable ingress
+minikube tunnel
 ```
 
 ## Добавление токена авторизации GitHub

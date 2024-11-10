@@ -23,6 +23,9 @@ class MqttInboundConfig(@Value("\${mqtt.url}") val url: String,
         logger.info("Initialising mqttClientFactory, mqtt url: ${url}")
         val factory = DefaultMqttPahoClientFactory()
         val options = MqttConnectOptions()
+        options.isAutomaticReconnect = true
+        options.keepAliveInterval = 60
+        options.connectionTimeout = 10
         options.serverURIs = arrayOf(url)
         factory.connectionOptions = options
         return factory

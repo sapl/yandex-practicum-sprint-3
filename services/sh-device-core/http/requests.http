@@ -5,26 +5,29 @@ POST {{baseUrl}}/api/v1/devices
 Content-Type: application/json
 
 {
+  "id": "{{deviceId_1}}",
   "type": "HEATING_SYSTEM",
-  "model": "Mi Smart Space Heater",
-  "serialNumber": "00-B0-D0-63-C2-21",
+  "model": "Mi Smart Space Heater (1)",
+  "serialNumber": "00-B0-D0-63-C4-21",
   "hardwareVersion": "BHR4037GL"
 }
 
 
-### Get Device Info
-GET {{baseUrl}}/api/v1/devices/672fabf8efbaf148fc572b0d
+### Get Device Info 1
+GET {{baseUrl}}/api/v1/devices/{{deviceId_1}}
+
+### Get Device Info 1
+GET {{baseUrl}}/api/v1/devices/{{deviceId_2}}
 
 
 ### Get Sensor Telemetry
-GET {{baseUrl}}/api/v1/devices/672fabf8efbaf148fc572b0d/state
+GET {{baseUrl}}/api/v1/devices/{{deviceId_1}}/state
 
 ### Send Sensor Telemetry
-PATCH {{baseUrl}}/api/v1/devices/672fabf8efbaf148fc572b0d/state
+PATCH {{baseUrl}}/api/v1/devices/{{deviceId_1}}/state
 Content-Type: application/json
 
 {
-  "isOn": false,
-  "wdw": null,
-  "targetTemperature": 222
+  "isOn": true,
+  "targetTemperature": 22
 }

@@ -28,6 +28,20 @@ services:
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_DB=default
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    networks:
+      - sh_network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: smart_home
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   mosquitto:
     image: eclipse-mosquitto
     container_name: mosquitto
@@ -40,13 +54,30 @@ services:
                   echo 'bind_address 0.0.0.0' >> /mosquitto/config/mosquitto.conf &&
                   echo 'log_type all' >> /mosquitto/config/mosquitto.conf &&
                   mosquitto -c /mosquitto/config/mosquitto.conf"
+
+  sh-monolith:
+    build:
+      context: ./smart-home-monolith
+    container_name: sh-monolith
+    image: sh-monolith
+    ports:
+      - "8090:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - SERVICE_DEVICE_CORE_URL=http://sh-device-core:8080
+      - SERVICE_TELEMETRY_URL=http://sh-telemetry:8080
+
   sh-users:
     build:
       context: ./services/sh-users
     container_name: sh-users
     image: sh-users
     ports:
-      - "8090:8080"
+      - "8091:8080"
     networks:
       - sh_network
     environment:
@@ -71,7 +102,7 @@ services:
     container_name: sh-telemetry
     image: sh-telemetry
     ports:
-      - "8091:8080"
+      - "8093:8080"
     networks:
       - sh_network
     environment:
@@ -85,3 +116,4 @@ networks:
 volumes:
   mongo_data:
   clickhouse_data:
+  postgres_data:

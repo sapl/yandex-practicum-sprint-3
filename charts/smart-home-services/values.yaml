@@ -10,6 +10,7 @@ ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
+
   hosts:
     - host: sh-users.local
       paths: ["/"]
@@ -17,6 +18,8 @@ ingress:
       paths: ["/"]
     - host: sh-telemetry.local
       paths: ["/"]
+    - host: sh-monolith.local
+      paths: [ "/" ]
 
 services:
   mosquitto:
@@ -47,6 +50,30 @@ services:
         value: default
       - name: CLICKHOUSE_DB
         value: default
+
+  postgres:
+    image: postgres
+    containerPort: 5432
+    servicePort: 5432
+    env:
+      - name: POSTGRES_USER
+        value: postgres
+      - name: POSTGRES_PASSWORD
+        value: postgres
+      - name: POSTGRES_DB
+        value: smart_home
+
+  sh-monolith:
+    image: sh-monolith
+    containerPort: 8080
+    servicePort: 8080
+    env:
+      - name: DB_HOST
+        value: postgres
+      - name: DB_PASS
+        value: postgres
+      - name: SERVICE_DEVICE_CORE_URL
+        value: http://sh-device-core.local
 
   sh-users:
     image: sh-users

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.bson.types.ObjectId
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
@@ -55,6 +56,7 @@ class DeviceController(val deviceRepository: DeviceRepository) {
         @RequestBody dto: DeviceDto
     ): DeviceDto = (deviceRepository.save(
         Device(
+            id = dto.id ?: ObjectId.get().toString(),
             type = dto.type, model = dto.model,
             serialNumber = dto.serialNumber,
             hardwareVersion = dto.hardwareVersion

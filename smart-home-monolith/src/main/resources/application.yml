@@ -19,5 +19,10 @@ spring:
       mode: always
       schema-locations: classpath:init.sql
 
+
+services.sh-device-core.url: ${SERVICE_DEVICE_CORE_URL:http://sh-device-core.local}
+services.sh-users.url: ${SERVICE_USERS_URL:http://sh-users.local}
+services.sh-telemetry.url: ${SERVICE_TELEMETRY_URL:http://sh-telemetry.local}
+
 server:
   port: 8080
