@@ -47,7 +47,7 @@ jobs:
 
   deploy:
     runs-on: self-hosted
-
+    needs: build
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
