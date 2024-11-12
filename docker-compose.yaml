@@ -101,7 +101,7 @@ services:
     build:
       context: ./services/sh-telemetry
     container_name: sh-telemetry
-    image: sh-telemetry
+    image: ghcr.io/sapl/sh-telemetry:latest
     ports:
       - "8093:8080"
     networks:

@@ -96,6 +96,7 @@ services:
         value: tcp://mosquitto:1883
 
   sh-telemetry:
+    repository: ghcr.io/sapl/sh-telemetry:latest
     image: sh-telemetry
     containerPort: 8080
     servicePort: 8080
