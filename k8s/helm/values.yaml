@@ -86,9 +86,11 @@ services:
         value: mongodb://mongo:27017/sh_users
 
   sh-device-core:
-    image: sh-device-core
+    image: ghcr.io/sapl/sh-device-core:latest
+    pullPolicy: Always
     containerPort: 8080
     servicePort: 8080
+
     env:
       - name: DB_CONNECTION_URL
         value: mongodb://mongo:27017/sh_telemetry
@@ -96,7 +98,7 @@ services:
         value: tcp://mosquitto:1883
 
   sh-telemetry:
-    repository: ghcr.io/sapl/sh-telemetry:latest
+    repository: sh-telemetry
     image: sh-telemetry
     containerPort: 8080
     servicePort: 8080
