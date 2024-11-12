@@ -24,12 +24,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
-        name: Build and push
+        name: Build and push smart-home-monolith
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           context: smart-home-monolith
           push: true
-          tags: ghcr.io/sapl/yandex-practicum-sprint-3:latest
+          tags: ghcr.io/sapl/smart-home-monolith:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push sh-telemetry
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: services/sh-telemetry
+          push: true
+          tags: ghcr.io/sapl/sh-telemetry:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
