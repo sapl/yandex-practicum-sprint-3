@@ -15,6 +15,7 @@ data class Device(
     val model: String,
     @Indexed(unique = true)
     val serialNumber: String,
+    val firmwareVersion: String,
     val hardwareVersion: String,
     @Indexed(unique = true)
     val authKey: String = UUID.randomUUID().toString(),

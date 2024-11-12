@@ -4,6 +4,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
@@ -27,9 +28,10 @@ interface DeviceTelemetryRepository : JpaRepository<DeviceTelemetry, String> {
         deviceId: String
     ): List<DeviceTelemetry>
 
-    fun findByDeviceIdAndSensorNameAndDatetimeAfter(
+    fun findByDeviceIdAndSensorNameAndDatetimeAfterOrderByDatetimeDesc(
         deviceId: String,
         sensorName: String,
-        timeFrom: Instant
+        timeFrom: Instant,
+        pageable: Pageable
     ): List<DeviceTelemetry>
 }

@@ -22,7 +22,7 @@ class MqttMessageHandler(val deviceService: DeviceService) {
             val channel = topic.split("/")[2]
             val payload = jacksonObjectMapper().readValue<Map<String, Any>>(message.payload)
             when (channel) {
-                "command" -> deviceService.updateDesiredState(deviceId, payload)
+                "command" -> logger.info("This is device topic: desired new state for ${deviceId}: ${payload}")
                 "state" -> deviceService.updateReportedState(deviceId, payload)
                 "telemetry" -> deviceService.updateDeviceTelemetry(deviceId, payload)
                 else -> logger.error("Unsupported topic ${topic}")
@@ -33,6 +33,7 @@ class MqttMessageHandler(val deviceService: DeviceService) {
         }
     }
 }
+
 
 
 

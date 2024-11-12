@@ -10,7 +10,6 @@ import java.time.Instant
 data class DeviceState(
     @Id var deviceId: String,
     var lastOnlineAt: Instant? = Instant.now(),
-    val firmwareVersion: String? = null,
     val desiredState: MutableMap<String, Any> = mutableMapOf(),
     val reportedState: MutableMap<String, Any> = mutableMapOf(),
     val telemetry: MutableMap<String, Any> = mutableMapOf(),

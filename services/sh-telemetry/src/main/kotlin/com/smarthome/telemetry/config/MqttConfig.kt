@@ -10,6 +10,7 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter
 import org.springframework.messaging.MessageChannel
+import java.util.*
 
 
 @Configuration
@@ -30,7 +31,7 @@ class MqttInboundConfig(@Value("\${mqtt.url}") val url: String,
     @Bean
     fun mqttInbound(): MqttPahoMessageDrivenChannelAdapter {
         return MqttPahoMessageDrivenChannelAdapter(
-            "clientId", mqttClientFactory(), topic
+            "clientId-" + UUID.randomUUID(), mqttClientFactory(), topic
         ).apply {
             setCompletionTimeout(5000)
             setConverter(DefaultPahoMessageConverter())

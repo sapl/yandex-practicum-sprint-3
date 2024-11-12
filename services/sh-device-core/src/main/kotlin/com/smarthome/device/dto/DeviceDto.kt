@@ -31,6 +31,13 @@ data class DeviceDto(
         example = "00-B0-D0-63-C2-26"
     )
     val serialNumber: String,
+
+    @field:Schema(
+        description = "Current device firmware version.", required = true,
+        example = "0.4.4-beta"
+    )
+    val firmwareVersion: String,
+
     //
     @field:Schema(
         description = "Device hardware version.", required = true,
@@ -51,6 +58,7 @@ fun Device.toDto() =
         id = id,
         type = type,
         model = model,
+        firmwareVersion = firmwareVersion,
         serialNumber = serialNumber,
         hardwareVersion = hardwareVersion,
         createdAt = createdAt

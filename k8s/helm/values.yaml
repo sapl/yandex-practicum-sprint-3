@@ -7,19 +7,19 @@ service:
   type: ClusterIP
 
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
+  enabled: false
+#  annotations:
+#    kubernetes.io/ingress.class: nginx
 
-  hosts:
-    - host: sh-users.local
-      paths: ["/"]
-    - host: sh-device-core.local
-      paths: ["/"]
-    - host: sh-telemetry.local
-      paths: ["/"]
-    - host: sh-monolith.local
-      paths: [ "/" ]
+#  hosts:
+#    - host: sh-users.local
+#      paths: ["/"]
+#    - host: sh-device-core.local
+#      paths: ["/"]
+#    - host: sh-telemetry.local
+#      paths: ["/"]
+#    - host: sh-monolith.local
+#      paths: [ "/" ]
 
 services:
   mosquitto:
@@ -73,7 +73,9 @@ services:
       - name: DB_PASS
         value: postgres
       - name: SERVICE_DEVICE_CORE_URL
-        value: http://sh-device-core.local
+        value: http://sh-device-core:8080
+      - name: MQTT_CONNECTION_URL
+        value: tcp://mosquitto:1883
 
   sh-users:
     image: sh-users

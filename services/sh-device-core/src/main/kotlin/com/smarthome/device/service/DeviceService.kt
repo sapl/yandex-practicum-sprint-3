@@ -1,6 +1,7 @@
 package com.smarthome.device.service
 
-import com.smarthome.device.config.NotFoundException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.smarthome.device.config.MqttGateway
 import com.smarthome.device.dto.DeviceStateDto
 import com.smarthome.device.entity.DeviceState
 import com.smarthome.device.entity.DeviceStateRepository
@@ -12,37 +13,45 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 @Service
-class DeviceService(val deviceStateRepository: DeviceStateRepository) {
+class DeviceService(
+    val deviceStateRepository: DeviceStateRepository,
+    val mqttGateway: MqttGateway
+) {
     private val logger = LogFactory.getLog(javaClass)
 
+    private val objectMapper = ObjectMapper();
 
     //TODO в реальном проекте
     //  - desire обновляет пользователь, reported - device
     //  - потоконезависимость при обновлении
 
+
     fun updateDesiredState(deviceId: String, update: Map<String, Any>) {
-        updateDeviceState(deviceId, update, isDesired = true)
+        val state = deviceStateRepository.findByIdOrNull(deviceId) ?: DeviceState(deviceId = deviceId)
+        state.lastOnlineAt = Instant.now()
+        state.desiredState.putAll(update)
+        state.desiredState.put("timestamp", Instant.now())
+        deviceStateRepository.save(state)
+
+        mqttGateway.sendToMqtt(objectMapper.writeValueAsString(update), "devices/${deviceId}/command")
+
+        // emulate is device reported update
         Executors.newScheduledThreadPool(1).schedule({
-            updateReportedState(deviceId, update)
-        }, 5, TimeUnit.SECONDS)
+            mqttGateway.sendToMqtt(objectMapper.writeValueAsString(update), "devices/${deviceId}/state")
+        }, 10, TimeUnit.SECONDS)
+
     }
 
     fun updateReportedState(deviceId: String, update: Map<String, Any>) {
-        updateDeviceState(deviceId, update, isDesired = false)
-    }
-
-    private fun updateDeviceState(deviceId: String, update: Map<String, Any>, isDesired: Boolean) {
         val state = deviceStateRepository.findByIdOrNull(deviceId) ?: DeviceState(deviceId = deviceId)
         state.lastOnlineAt = Instant.now()
-        val targetState = (if (isDesired) state.desiredState else state.reportedState)
-        if (!isDesired) {
-            state.desiredState.clear()
-            logger.info("Device [${deviceId}] state updated: ${update}")
-        }
-        targetState.putAll(update)
-        targetState.put("timestamp", Instant.now())
+        state.reportedState.putAll(update)
+        state.reportedState.put("timestamp", Instant.now())
+        state.desiredState.clear()
+        logger.info("Device [${deviceId}] state updated: ${state.reportedState}")
         deviceStateRepository.save(state)
     }
+
 
     fun updateDeviceTelemetry(deviceId: String, update: Map<String, Any>) {
         val state = deviceStateRepository.findByIdOrNull(deviceId) ?: DeviceState(deviceId = deviceId)
@@ -60,7 +69,7 @@ class DeviceService(val deviceStateRepository: DeviceStateRepository) {
                 desiredState = it.desiredState,
                 telemetry = it.telemetry
             )
-        } ?: throw NotFoundException("No device found")
+        } ?: DeviceStateDto()
 
 
 }

@@ -1,0 +1,18 @@
+
+### Get Heating Info
+GET {{monolithBaseUrl}}/api/heating/1
+
+### Get Telemetry
+GET {{monolithBaseUrl}}/api/heating/1/current-temperature
+
+### Turn on
+POST http://localhost:8080/api/heating/1/turn-on
+
+### Turn on
+POST {{monolithBaseUrl}}/api/heating/1/turn-on
+
+### Turn off
+POST {{monolithBaseUrl}}/api/heating/1/turn-off
+
+### Set target temperature
+POST {{monolithBaseUrl}}/api/heating/1/set-temperature?temperature=30

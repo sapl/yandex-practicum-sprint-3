@@ -59,6 +59,7 @@ class DeviceController(val deviceRepository: DeviceRepository) {
             id = dto.id ?: ObjectId.get().toString(),
             type = dto.type, model = dto.model,
             serialNumber = dto.serialNumber,
+            firmwareVersion = dto.firmwareVersion,
             hardwareVersion = dto.hardwareVersion
         )
     ).toDto())

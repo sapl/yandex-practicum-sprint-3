@@ -5,6 +5,7 @@ import com.smarthome.telemetry.service.TelemetryService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -47,8 +48,9 @@ class TelemetryController(val telemetryService: TelemetryService) {
     fun getTelemetry(
         @Parameter(description = "ID of the device") @PathVariable deviceId: String,
         @Parameter(description = "Sensor name", example = "temperature") @RequestParam sensorName: String,
+        @Parameter(description = "Page size") @RequestParam(defaultValue = "10") pageSize: Int,
         @Parameter(description = "The start time", example = "2024-11-08T13:14:13Z") @RequestParam timeFrom: Instant
     ): List<TelemetryValueDto> {
-        return telemetryService.getTelemetry(deviceId, sensorName, timeFrom)
+        return telemetryService.getTelemetry(deviceId, sensorName, timeFrom, Pageable.ofSize(pageSize))
     }
 }

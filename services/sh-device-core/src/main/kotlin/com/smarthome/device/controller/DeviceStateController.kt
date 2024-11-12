@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Device State")
 class DeviceStateController(val deviceService: DeviceService) {
 
-    @PatchMapping()
+    @PostMapping()
     @Operation(
         summary = "Update desired state",
         description = "Update of the device desired state/settings, any JSON format: \n\n" +

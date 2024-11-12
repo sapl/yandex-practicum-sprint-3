@@ -5,6 +5,7 @@ import com.smarthome.telemetry.entity.DeviceTelemetry
 import com.smarthome.telemetry.entity.DeviceTelemetryRepository
 import jakarta.annotation.PreDestroy
 import org.apache.commons.logging.LogFactory
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.format.DateTimeParseException
@@ -61,10 +62,11 @@ class TelemetryService(val telemetryRepository: DeviceTelemetryRepository) {
     fun getTelemetry(
         deviceId: String,
         sensorName: String,
-        timeFrom: Instant
+        timeFrom: Instant,
+        pageable: Pageable
     ): List<TelemetryValueDto> {
-        return telemetryRepository.findByDeviceIdAndSensorNameAndDatetimeAfter(
-            deviceId = deviceId, sensorName, timeFrom
+        return telemetryRepository.findByDeviceIdAndSensorNameAndDatetimeAfterOrderByDatetimeDesc(
+            deviceId = deviceId, sensorName = sensorName, timeFrom = timeFrom, pageable = pageable
         ).map { TelemetryValueDto(it.datetime, it.value) }
     }
 

@@ -19,10 +19,17 @@ spring:
       mode: always
       schema-locations: classpath:init.sql
 
+mqtt:
+  url: ${MQTT_CONNECTION_URL:tcp://localhost:1883}
+  topic: devices/+/+
 
-services.sh-device-core.url: ${SERVICE_DEVICE_CORE_URL:http://sh-device-core.local}
-services.sh-users.url: ${SERVICE_USERS_URL:http://sh-users.local}
-services.sh-telemetry.url: ${SERVICE_TELEMETRY_URL:http://sh-telemetry.local}
+services:
+  sh-device-core:
+    url: ${SERVICE_DEVICE_CORE_URL:http://sh-device-core:8080}
+  sh-users:
+    url: ${SERVICE_USERS_URL:http://sh-users:8080}
+  sh-telemetry:
+    url: ${SERVICE_TELEMETRY_URL:http://sh-telemetry:8080}
 
 server:
   port: 8080
