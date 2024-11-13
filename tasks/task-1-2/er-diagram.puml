@@ -1,0 +1,123 @@
+@startuml
+
+
+package "IoT Hub / Device Core DB" {
+
+    entity devices {
+        * id : UUID
+        --
+        serial_number : STRING
+        type : ENUM
+        model : STRING
+        firmware_version: STRING
+        hardware_version: STRING
+        auth_key: STRING
+        created_at : STRING
+    }
+
+
+    entity device_state {
+        * device_id : UUID
+        --
+        last_online_at: DATETIME
+        desire_state : JSON
+        reported_state : JSON,
+        telemetry: JSON
+    }
+
+    device_state::device_id ||-|| devices::id : 1 к 1
+}
+
+package "Portal / User Management DB" {
+    entity users {
+        * id : UUID
+        --
+        email : STRING
+        phone : STRING
+        name : STRING
+        active_at : DATETIME
+        created_at : DATETIME
+    }
+
+    entity homes {
+        * id : UUID
+        --
+        name : STRING
+    }
+
+    entity user_homes {
+        * user_id : UUID
+        * home_id : UUID
+        --
+        is_owner: BOOLEAN
+    }
+
+    entity home_devices {
+        * device_id : UUID
+        * home_id : UUID
+        --
+        <<unique>> device_id, home_id
+    }
+
+    entity mobile_installations {
+        * id : STRING
+        * user_id : UUID
+        --
+        platform: ENUM
+        app_version: STRING
+        push_token: STRING
+        updated_at: DATETIME
+    }
+
+    home_devices::home_id  --> homes::id
+    user_homes::home_id  --> homes::id
+    user_homes::user_id  --> users::id
+    mobile_installations::user_id --> users::id
+}
+
+package "Portal / Device Configuration DB" {
+    entity device_schedules {
+        * device_id : UUID
+        --
+        action : ENUM
+        repeat: ENUM
+        datetime: DATETIME
+        timezone: STRING
+    }
+
+     entity device_settings {
+        * device_id : UUID
+        --
+        name: STRING
+        timezone: STRING
+        params : JSON
+        updated_at: DATETIME
+     }
+}
+
+package "Portal / ClickHouse DB" {
+    entity device_telemetry {
+        * device_id : UUID
+        --
+        sensor_name: STRING
+        datetime: DATETIME
+        value: FLOAT
+    }
+
+    entity device_log {
+        * device_id : UUID
+        --
+        level : ENUM
+        datetime: DATETIME
+        message: FLOAT
+    }
+}
+
+
+home_devices::device_id  .-> devices::id
+device_telemetry::device_id  .-> devices::id
+device_log::device_id  .-> devices::id
+device_schedules::device_id  .-> devices::id
+device_settings::device_id  .-> devices::id
+
+@enduml

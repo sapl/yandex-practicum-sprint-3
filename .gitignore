@@ -191,4 +191,7 @@ build/
 
 
 tmp/
-task-*
+
+**/.env
+
+actions-runner

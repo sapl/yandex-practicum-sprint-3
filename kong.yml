@@ -1,0 +1,41 @@
+_format_version: "3.0"
+
+services:
+  - name: sh-users
+    url: http://sh-users:8080
+    routes:
+      - name: sh-users
+        paths:
+          - /u
+
+  - name: sh-device-core
+    url: http://sh-device-core:8080
+    connect_timeout: 5000
+    write_timeout: 5000
+    read_timeout: 5000
+    routes:
+      - name: sh-device-core
+        paths:
+          - /d
+
+  - name: sh-telemetry
+    url: http://sh-telemetry:8080
+    routes:
+      - name: sh-telemetry
+        paths:
+          - /t
+        plugins:
+          - name: rate-limiting
+            config:
+              second: 1
+
+  - name: sh-monolith
+    url: http://sh-monolith:8080
+    routes:
+      - name: sh-monolith
+        paths:
+          - /m
+        plugins:
+          - name: rate-limiting
+            config:
+              second: 1

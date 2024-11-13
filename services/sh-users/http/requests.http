@@ -1,0 +1,34 @@
+
+
+### Get User Homes
+GET {{baseUrl}}/api/v1/users
+
+### Create User
+POST {{baseUrl}}/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "Bob Dillan",
+  "email": "bob@gmail.com"
+}
+
+### Create User Home
+POST {{baseUrl}}/api/v1/users/672d1ba861c0d36e08cb6964/homes
+Content-Type: application/json
+
+{
+  "name": "My Home"
+}
+
+### Get User Homes
+GET {{baseUrl}}/api/v1/users/672d1ba861c0d36e08cb6964/homes
+
+
+### Assign device
+PUT {{baseUrl}}/api/v1/homes/672d2e148e2e6a01c235e984/devices/ca-00-xx
+Content-Type: application/json
+
+
+### Unassign device
+DELETE {{baseUrl}}/api/v1/homes/672d2e148e2e6a01c235e984/devices/ca-00-xx
+Content-Type: application/json

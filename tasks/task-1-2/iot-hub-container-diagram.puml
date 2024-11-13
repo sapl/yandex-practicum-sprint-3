@@ -1,0 +1,55 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+AddRelTag("dashed", $lineStyle = DashedLine())
+AddElementTag("db", $bgColor="#999bd1", $borderColor="#4c46b0")
+
+LAYOUT_TOP_DOWN()
+
+title Модуль IoT Hub и взаимодействие с устройствами умного дома
+
+Person(user, "Пользователь\n Mobile app")
+
+Boundary(home, "Домашняя сеть", "Wi-Fi, Zigbee, Bluetooth") {
+    Component_Ext(sensor1, "Sensor 1", "Zigbee")
+    Container_Ext(gateway, "Device Gateway", "Wi-Fi, Zigbee")
+    Component_Ext(sensor2, "Sensor 2", "Zigbee")
+
+    Lay_L(sensor2, gateway)
+    Container_Ext(heatingSystem, "Heating System", "Wi-Fi", "Система отопления")
+    Container_Ext(lighting, "Lighting", "Wi-Fi", "Уличное освещение")
+
+    sensor1 .> gateway
+    sensor2 .> gateway
+}
+
+Rel(user, home, "Подключение устройства через Bluetooth/Wi-Fi")
+
+Boundary(iotHub, "IoT Hub", "IoT Core функции") {
+    Deployment_Node(kafka, "Шина данных", "Apache Kafka/Mosquitto", "MQTT/Kafka топики")
+    Container(dps, "Device Provisioning", "Java", "Первичная регистрация устройства")
+    Container(deviceManagementService, "Device Core Management", "Java", "Базовые общие интерфейсы работы с абстрактным устройством.")
+    Container(communicationService, "Communication Service", "Java", "Отвечает за MQTT топики/мосты, доп. каналы коммуникации.")
+    ContainerDb(devicesDb, "Device State DB", "MongoDB", "Мета информация, состояние, конфигурация", $tags=db)
+}
+
+Boundary(portal, "«Тёплый дом» Portal") {
+    Container(dataService, "Device Data Processing", "Java", "Прием и обработка телеметрии")
+    Container(configurationService, "Device Custom Configuration", "Java", "Реализует логику в зависимости от типа.")
+    Container(dataService, "Device Data Processing", "Java", "Прием и обработка телеметрии")
+}
+
+Rel(home, kafka, "Отправка телеметрии, приём команд, DP", "MQTT/HTTPS (TLS)")
+deviceManagementService -> devicesDb
+dps <-> kafka
+home .> communicationService : Дополнительные каналы если нужны, например передача фото/видео, обновление прошивки
+dps -> deviceManagementService : HTTP API
+kafka <-> communicationService
+Rel_D(kafka, deviceManagementService, "Обновление состояния")
+kafka --> dataService : Подписка на топик с телеметрией
+configurationService -> deviceManagementService : HTTP API
+
+@enduml
