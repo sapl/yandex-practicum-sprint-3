@@ -18,7 +18,7 @@ System_Ext(partnerSystems, "Partner Services", "B2B интеграции")
 Boundary(platform, "«Тёплый дом» (IoT Платформа)", "Enterprise Network, K8s, HTTP API, Kafka Topics") {
     System(iotHub, "IoT Hub Services", "- Device Provisioning \n - Device Core Management \n - Communication")
     System(portal, "Portal Services", "- Device Data Processing \n - Device Configuration \n - User Management \n - Auth Service \n - Support Service")
-    Deployment_Node(infra, "Infrastructure Services", "Kubernetes Network", "- Apache Kafka\n -Redis Cache \n - Prometheus, Grafana \n - Zipkin, Loki")
+    System(infra, "Infrastructure Services", "Kubernetes Network", "- Apache Kafka\n -Redis Cache \n - Prometheus, Grafana \n - Zipkin, Loki")
 }
 
 Boundary(home, "Домашняя сеть", "Wi-Fi, Zigbee, Bluetooth") {

@@ -9,6 +9,7 @@ package "IoT Hub / Device Core DB" {
         serial_number : STRING
         type : ENUM
         model : STRING
+        firmware_version: STRING
         hardware_version: STRING
         auth_key: STRING
         created_at : STRING
@@ -19,7 +20,6 @@ package "IoT Hub / Device Core DB" {
         * device_id : UUID
         --
         last_online_at: DATETIME
-        firmware_version: STRING
         desire_state : JSON
         reported_state : JSON,
         telemetry: JSON

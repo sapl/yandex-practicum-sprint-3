@@ -29,10 +29,10 @@ Boundary(home, "Домашняя сеть", "Wi-Fi, Zigbee, Bluetooth") {
 Rel(user, home, "Подключение устройства через Bluetooth/Wi-Fi")
 
 Boundary(iotHub, "IoT Hub", "IoT Core функции") {
-    Deployment_Node(kafka, "Шина данных", "Apache Kafka", "MQTT топики")
+    Deployment_Node(kafka, "Шина данных", "Apache Kafka/Mosquitto", "MQTT/Kafka топики")
     Container(dps, "Device Provisioning", "Java", "Первичная регистрация устройства")
     Container(deviceManagementService, "Device Core Management", "Java", "Базовые общие интерфейсы работы с абстрактным устройством.")
-    Container(communicationService, "Communication Service", "Java", "Обеспечивает канал связи с устройствами через MQTT/HTTPS")
+    Container(communicationService, "Communication Service", "Java", "Отвечает за MQTT топики/мосты, доп. каналы коммуникации.")
     ContainerDb(devicesDb, "Device State DB", "MongoDB", "Мета информация, состояние, конфигурация", $tags=db)
 }
 
@@ -42,9 +42,10 @@ Boundary(portal, "«Тёплый дом» Portal") {
     Container(dataService, "Device Data Processing", "Java", "Прием и обработка телеметрии")
 }
 
-Rel(home, communicationService, "Отправка телеметрии, приём команд, DP", "MQTT/HTTPS (TLS)")
+Rel(home, kafka, "Отправка телеметрии, приём команд, DP", "MQTT/HTTPS (TLS)")
 deviceManagementService -> devicesDb
 dps <-> kafka
+home .> communicationService : Дополнительные каналы если нужны, например передача фото/видео, обновление прошивки
 dps -> deviceManagementService : HTTP API
 kafka <-> communicationService
 Rel_D(kafka, deviceManagementService, "Обновление состояния")
