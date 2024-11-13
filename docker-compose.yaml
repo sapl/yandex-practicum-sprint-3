@@ -88,7 +88,7 @@ services:
     build:
       context: ./services/sh-device-core
     container_name: sh-device-core
-    image: sh-device-core
+    image: ghcr.io/sapl/sh-device-core:latest
     ports:
       - "8092:8080"
     networks:
