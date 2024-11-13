@@ -15,13 +15,8 @@ public class HeatingSystem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false)
-    private boolean isOn;
-    
-    @Column(nullable = false)
-    private double targetTemperature;
 
-    @Column(nullable = false)
-    private double currentTemperature;
+    @Column(name = "iot_hub_device_id", nullable = false)
+    private String iotHubDeviceId;
+
 }

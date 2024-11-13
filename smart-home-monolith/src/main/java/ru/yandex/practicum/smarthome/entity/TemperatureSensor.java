@@ -10,8 +10,6 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "temperature_sensors")
 @Data
 public class TemperatureSensor {
     @Id

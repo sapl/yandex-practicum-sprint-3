@@ -6,4 +6,6 @@ import ru.yandex.practicum.smarthome.entity.HeatingSystem;
 
 @Repository
 public interface HeatingSystemRepository extends JpaRepository<HeatingSystem, Long> {
+
+    HeatingSystem findByIotHubDeviceId(String deviceId);
 }

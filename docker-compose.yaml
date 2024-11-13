@@ -1,0 +1,137 @@
+version: '3.8'
+
+name: smart-home
+
+services:
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27018:27017"
+    networks:
+      - sh_network
+    volumes:
+      - mongo_data:/data/db
+
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    networks:
+      - sh_network
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_DB=default
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    networks:
+      - sh_network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: smart_home
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1884:1883"
+    networks:
+      - sh_network
+    command: >
+      /bin/sh -c "echo 'allow_anonymous true' > /mosquitto/config/mosquitto.conf &&
+                  echo 'bind_address 0.0.0.0' >> /mosquitto/config/mosquitto.conf &&
+                  echo 'log_type all' >> /mosquitto/config/mosquitto.conf &&
+                  mosquitto -c /mosquitto/config/mosquitto.conf"
+
+  sh-monolith:
+    build:
+      context: ./smart-home-monolith
+    container_name: sh-monolith
+    image: sh-monolith
+    ports:
+      - "8090:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - SERVICE_DEVICE_CORE_URL=http://sh-device-core:8080
+      - SERVICE_TELEMETRY_URL=http://sh-telemetry:8080
+      - MQTT_CONNECTION_URL=tcp://mosquitto:1883
+
+  sh-users:
+    build:
+      context: ./services/sh-users
+    container_name: sh-users
+    image: sh-users
+    ports:
+      - "8091:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_CONNECTION_URL=mongodb://mongo:27017/sh_users
+
+  sh-device-core:
+    build:
+      context: ./services/sh-device-core
+    container_name: sh-device-core
+    image: ghcr.io/sapl/sh-device-core:latest
+    ports:
+      - "8092:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_CONNECTION_URL=mongodb://mongo:27017/sh_devices
+      - MQTT_CONNECTION_URL=tcp://mosquitto:1883
+
+  sh-telemetry:
+    build:
+      context: ./services/sh-telemetry
+    container_name: sh-telemetry
+    image: sh-telemetry
+    ports:
+      - "8093:8080"
+    networks:
+      - sh_network
+    environment:
+      - DB_CONNECTION_URL=jdbc:clickhouse://clickhouse:8123/default
+      - MQTT_CONNECTION_URL=tcp://mosquitto:1883
+
+  kong:
+    image: kong:latest
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: "/kong/declarative/kong.yml"
+      KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    networks:
+      - sh_network
+    volumes:
+      - ./kong.yml:/kong/declarative/kong.yml
+
+networks:
+  sh_network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  clickhouse_data:
+  postgres_data:

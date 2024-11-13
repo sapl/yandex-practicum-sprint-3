@@ -1,0 +1,77 @@
+
+### Device Service Status
+GET {{deviceBaseUrl}}/actuator/info
+### Telemetry Service Status
+GET {{telemetryBaseUrl}}/actuator/info
+### User Service Status
+GET {{userBaseUrl}}/actuator/info
+
+### Register Heating System (Old device)
+POST {{deviceBaseUrl}}/api/v1/devices
+Content-Type: application/json
+
+{
+  "id": "{{deviceId_1}}",
+  "type": "HEATING_SYSTEM",
+  "model": "Space Heater S1",
+  "serialNumber": "00-B0-D0-62-C4-21",
+  "firmwareVersion": "0.6.1",
+  "hardwareVersion": "BHR4037GL"
+}
+
+### Register Smart Light  (New device)
+POST {{deviceBaseUrl}}/api/v1/devices
+Content-Type: application/json
+
+{
+  "id": "{{deviceId_2}}",
+  "type": "SMART_LIGHT",
+  "model": "Smart light O1",
+  "serialNumber": "00-B0-FF-SS-C4-10",
+  "firmwareVersion": "0.4.1-beta",
+  "hardwareVersion": "LL-02"
+}
+
+### Get Static Device Info 1
+GET {{deviceBaseUrl}}/api/v1/devices/{{deviceId_1}}
+### Get Static Device Info 2
+GET {{deviceBaseUrl}}/api/v1/devices/{{deviceId_2}}
+
+### Send State Update Command (to Heating system)
+POST {{deviceBaseUrl}}/api/v1/devices/{{deviceId_1}}/state
+Content-Type: application/json
+
+{
+  "isOn": true,
+  "targetTemperature": 24
+}
+
+### Send State Update Command (to Heating system)
+POST {{deviceBaseUrl}}/api/v1/devices/{{deviceId_2}}/state
+Content-Type: application/json
+
+{
+  "isOn": false,
+  "brightness": 75
+}
+
+### Get Device State 1 (Heating System)
+GET {{deviceBaseUrl}}/api/v1/devices/{{deviceId_1}}/state
+### Get Device State 2 (Smart Light)
+GET {{deviceBaseUrl}}/api/v1/devices/{{deviceId_2}}/state
+
+### Post Telemetry via HTTP
+POST {{telemetryBaseUrl}}/api/v1/devices/{{deviceId_1}}/telemetry
+Content-Type: application/json
+
+{
+  "temperature": 29.991,
+  "humidity": 55
+}
+
+### Get Sensor Telemetry (Temperature)
+GET {{telemetryBaseUrl}}/api/v1/devices/{{deviceId_1}}/telemetry?sensorName=temperature&pageSize=5&timeFrom=2024-11-12T11:44:26Z
+
+### Get Sensor Telemetry (Hunidity)
+GET {{telemetryBaseUrl}}/api/v1/devices/{{deviceId_1}}/telemetry?sensorName=humidity&pageSize=5&timeFrom=2024-11-12T11:44:26Z
+

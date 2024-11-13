@@ -1,0 +1,32 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователи")
+Person(admin, "Техники")
+
+
+Boundary(platform, "«Тёплый дом» ", "Корпоративная сеть") {
+    Container(web, "Web UI", "Nginx (HTML+Proxy)")
+    Container(backend, "Бэкенд", "Java", "Монолитный бакенд. Собирает телеметрию, управляет пользователями и системой целиком")
+    ContainerDb(database, "Database", "Postgres", "Хранит и телеметрию и данные бизнес логики")
+    web -> backend: HTTP API
+    backend -> database
+}
+
+Boundary(home, "Домашняя сеть", "WiFi/GCM"){
+    Container_Ext(heatingSystem, "Heating\n system")
+    Container_Ext(sensor, "Temperature\n sensor 1")
+    sensor->heatingSystem : Wired\nconnection
+}
+
+
+Rel(user, web, "Проверить состояние, вкл/выкл отопление")
+Rel(admin, web, " ")
+admin .> home: Подключение и настройка на месте
+Rel(heatingSystem, backend, "Передача телеметрии, ожидание команд", "TCP/HTTP")
+
+
+@enduml
+
+

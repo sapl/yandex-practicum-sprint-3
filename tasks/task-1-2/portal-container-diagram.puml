@@ -1,0 +1,83 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+AddRelTag("dashed", $lineStyle = DashedLine())
+AddElementTag("db", $bgColor="#999bd1", $borderColor="#4c46b0")
+
+title Блок сервисов основного портала умного дома
+
+Boundary(actors, "") {
+    Person(user, "Пользователь")
+    Person(support, "Поддержка")
+    Person(tech, "Техник")
+    Container(apps, "Web / Mobile \n Applications", "iOS/Android/Web", "")
+    Rel(user, apps, " ")
+    Rel(support, apps, " ")
+    Rel(tech, apps, " ")
+}
+
+Boundary(iotHub, "IoT Hub", "IoT Core функции") {
+    Deployment_Node(kafka, "Шина данных", "Apache Kafka", "MQTT топики")
+    Container(deviceManagementService, "Device Core Management", "Java", "Базовые общие интерфейсы работы с абстрактным устройством.")
+    deviceManagementService <- kafka
+}
+
+Boundary(proxy, "Entry point") {
+    Container(authService, "Auth Service", "Keycloak")
+    Container(apiGateway, "API Gateway", "Kong")
+    apiGateway -> authService
+}
+
+Boundary(portal, "«Тёплый дом» Portal") {
+    Deployment_Node(redis, "Redis Cache", "Redis")
+
+    Boundary(dataService_, "") {
+        Container(dataService, "Device Data Processing", "Java", "Прием и обработка телеметрии")
+        ContainerDb(dataDb, "Data DB", "ClickHouse", "TimeSeries база с телеметрией с устройств", $tags=db)
+        Rel_D(dataService, dataDb, "SQL/JPA")
+    }
+
+    Boundary(userManagement_, "") {
+        Container(userManagement, "User Management", "Java", "Регистрация пользователей, настройки аккаунта")
+        ContainerDb(userDb, "Users DB", "MongoDb", "Пользователи, Их Home/Room, Связки Device->Home", $tags=db)
+        Rel_D(userManagement, userDb, " ")
+    }
+
+    Boundary(configurationService_, "") {
+        Container(configurationService, "Device Custom Configuration", "Java", "Обогощает, преобразует данные об устройстве, реализует логику в зависимости от типа.")
+        ContainerDb(configDb, "Config DB", "MongoDb", "Расписания, настройки, каталог моделей", $tags=db)
+        Rel_D(configurationService, configDb, " ")
+    }
+
+    Container(notificationService, "Notification Service", "Java")
+
+    Boundary(BFF, "") {
+        Container(supportBFF, "Support BFF", "Java")
+        Container(userPortalBFF, "User Portal BFF", "Java")
+    }
+
+    Lay_D(BFF, userManagement_)
+    Lay_D(BFF, dataService_)
+    Lay_D(BFF, configurationService_)
+
+    BFF -> userManagement : HTTP API
+    BFF -> configurationService : HTTP API
+    BFF -> dataService : HTTP API
+
+    kafka .> notificationService
+
+    kafka <.> configurationService : Принимает и преобразует события обновления статуса.
+
+    Lay_L(notificationService,userPortalBFF)
+    notificationService -> userManagement: Настройки уведомлений, Push токены
+}
+
+Rel_U(configurationService, deviceManagementService, "Получение состояние, отправка команд", "HTTP API")
+kafka .> dataService : Поток данных телеметрии
+Rel(apps, apiGateway, "REST API", "HTTP")
+Rel(apiGateway, userPortalBFF, " ")
+Rel(apiGateway, supportBFF, " ")
+
+@enduml
